@@ -1,0 +1,7 @@
+services:
+  it-tools:
+    image: corentinth/it-tools:latest # https://github.com/ClementTsai/it-tools
+    container_name: it-tools
+    restart: unless-stopped
+    ports:
+      - "8083:80"

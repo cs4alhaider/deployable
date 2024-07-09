@@ -1,0 +1,11 @@
+services:
+  typesense:
+    image: typesense/typesense:26.0 # https://github.com/typesense/typesense
+    ports:
+      - "8108:8108"
+    volumes:
+      - /tmp/data:/data
+    command: [
+      "--data-dir", "/data",
+      "--api-key", "Hu52dwsas2AdxdE"
+    ]

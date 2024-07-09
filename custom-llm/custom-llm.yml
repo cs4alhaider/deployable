@@ -1,0 +1,72 @@
+# This Docker Compose file sets up two services: ollama and open-webui.
+# - The ollama service runs the ollama/ollama container, with a volume mounted for persistent storage and a port exposed.
+# - The open-webui service runs the open-webui container, which depends on the ollama service to be running. 
+#   It shares the ollama volume for storage and has an additional volume for its own data, with a port exposed.
+# - The ollama volume is shared between both services for persistent storage.
+# - The open-webui volume is dedicated to the open-webui service for its backend data storage.
+
+# Services:
+# - ollama: A service running the ollama/ollama container. This service handles specific tasks required by the application, 
+#   using a named volume for persistent storage and exposing port 11434 for communication.
+# - open-webui: A service running the open-webui container from the image ghcr.io/open-webui/open-webui:ollama. 
+#   This service provides a web user interface, depending on the ollama service. It uses the same volume as ollama for 
+#   shared storage and an additional volume for its own data. It exposes port 3000 to the host.
+
+# version: '3.8'
+
+# services:
+#   ollama:
+#     image: ollama/ollama
+#     container_name: ollama
+#     volumes:
+#       - ollama:/root/.ollama  # Mount the volume for persistent storage
+#     ports:
+#       - "11434:11434"  # Map the container's port 11434 to the host's port 11434
+#     restart: unless-stopped  # Ensure the container restarts unless explicitly stopped
+
+#   open-webui:
+#     image: ghcr.io/open-webui/open-webui:ollama
+#     container_name: open-webui
+#     volumes:
+#       - ollama:/root/.ollama  # Mount the ollama volume for shared storage
+#       - open-webui:/app/backend/data  # Mount the open-webui volume for persistent storage
+#     ports:
+#       - "3000:8080"  # Map the container's port 8080 to the host's port 3000
+#     restart: always  # Ensure the container always restarts
+#     depends_on:
+#       - ollama  # Ensure ollama service starts before open-webui
+
+# volumes:
+#   ollama:  # Define the named volume shared by both services
+#   open-webui:  # Define another named volume for open-webui service
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    entrypoint: 
+      - /bin/sh
+      - /entrypoint.sh
+    volumes:
+      - ollama_data:/root/.ollama
+      - ./entrypoint.sh:/entrypoint.sh
+    ports:
+      - "11434:11434"
+    restart: unless-stopped
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - open_webui_data:/app/backend/data
+    ports:
+      - "3000:8080"
+    environment:
+      - OLLAMA_API_BASE_URL=http://ollama:11434/api
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama_data:
+  open_webui_data:

@@ -1,0 +1,160 @@
+
+# Keycloak with PostgreSQL using Docker Compose
+
+This repository contains the configuration files to set up a Keycloak server with a PostgreSQL database using Docker Compose. This setup allows you to quickly run and manage a Keycloak instance with PostgreSQL as its backend database.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+
+- [Docker](https://www.docker.com/get-started)
+- [Docker Compose](https://docs.docker.com/compose/install/) or [Podman](https://podman.io/getting-started) with [Podman Compose](https://github.com/containers/podman-compose)
+
+## Configuration
+
+This setup uses environment variables to configure the PostgreSQL and Keycloak services. Create a `.env` file in the root directory of the project with the following content:
+
+```env
+# PostgreSQL environment variables
+POSTGRES_DB=keycloak
+POSTGRES_USER=keycloak
+POSTGRES_PASSWORD=password
+
+# Keycloak environment variables
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=admin
+DB_VENDOR=postgres
+DB_ADDR=postgres
+DB_DATABASE=keycloak
+DB_USER=keycloak
+DB_PASSWORD=password
+```
+
+Replace `your_postgres_password` and `your_keycloak_password` with strong passwords.
+
+## Docker Compose Configuration
+
+The `docker-compose.yml` file defines two services: PostgreSQL and Keycloak.
+
+### PostgreSQL Service
+
+```yaml
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+```
+
+- **image**: Specifies the Docker image to use for PostgreSQL.
+- **container_name**: The name of the PostgreSQL container.
+- **environment**: Environment variables to configure the PostgreSQL database.
+- **volumes**: Persist PostgreSQL data in a Docker volume.
+- **networks**: Connects to the `keycloak-network`.
+
+### Keycloak Service
+
+```yaml
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command:
+      - start-dev
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      DB_VENDOR: ${DB_VENDOR}
+      DB_ADDR: ${DB_ADDR}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+    networks:
+      - keycloak-network
+```
+
+- **image**: Specifies the Docker image to use for Keycloak.
+- **container_name**: The name of the Keycloak container.
+- **command**: Command to start Keycloak in development mode.
+- **environment**: Environment variables to configure Keycloak and connect to the PostgreSQL database.
+- **ports**: Maps port 8080 in the container to port 8081 on the host.
+- **depends_on**: Ensures the PostgreSQL service is started before Keycloak.
+- **networks**: Connects to the `keycloak-network`.
+
+### Volumes and Networks
+
+```yaml
+volumes:
+  postgres_data:
+
+networks:
+  keycloak-network:
+    name: keycloak-network
+```
+
+- **volumes**: Defines a Docker volume to persist PostgreSQL data.
+- **networks**: Defines a Docker network for the services.
+
+## Running the Services
+
+### Using Docker Compose
+
+1. Make sure Docker Compose is installed.
+2. Navigate to the directory containing the `keycloak.yml` file.
+3. Run the following command to start the services:
+
+```sh
+docker-compose -f keycloak.yml up -d
+```
+
+This will start the PostgreSQL and Keycloak services in the background.
+
+### Using Podman Compose
+
+1. Make sure Podman and Podman Compose are installed.
+2. Navigate to the directory containing the `keycloak.yml` file.
+3. Run the following command to start the services:
+
+```sh
+podman-compose -f keycloak.yml up -d
+```
+
+This will start the PostgreSQL and Keycloak services in the background.
+
+## Accessing Keycloak
+
+Once the services are up and running, you can access the Keycloak admin console by navigating to `http://localhost:8081` in your web browser. Log in using the admin username and password specified in the `.env` file.
+
+## Stopping the Services
+
+To stop the services, run the following command:
+
+```sh
+docker-compose down
+```
+
+Or if using Podman:
+
+```sh
+podman-compose down
+```
+
+This will stop and remove the containers, but the data will persist in the Docker volume.
+
+## Conclusion
+
+You now have a running Keycloak server with a PostgreSQL backend using Docker Compose or Podman Compose. You can further customize the configuration and add more services as needed.
+
+For more information, refer to the [Keycloak documentation](https://www.keycloak.org/documentation) and [PostgreSQL documentation](https://www.postgresql.org/docs/).
+
+Feel free to reach out if you have any questions or need further assistance.

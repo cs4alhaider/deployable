@@ -1,0 +1,46 @@
+# This file defines the services for a Docker Compose setup that includes a PostgreSQL database and a Keycloak server.
+# The end result is a running Keycloak server that uses PostgreSQL as its database.
+
+services:
+  # PostgreSQL service configuration
+  postgres:
+    image: postgres:latest  # Use the latest PostgreSQL image // https://hub.docker.com/_/postgres
+    container_name: postgres  # Name the container 'postgres'
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}  # Set the database name to 'keycloak'
+      POSTGRES_USER: ${POSTGRES_USER}  # Set the database user to 'keycloak'
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}  # Set the database password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Persist PostgreSQL data in a Docker volume
+    networks:
+      - keycloak-network  # Connect to the 'keycloak-network' network
+
+  # Keycloak service configuration
+  keycloak: # https://github.com/keycloak/keycloak
+    image: quay.io/keycloak/keycloak:latest  # Use the latest Keycloak image from quay.io
+    container_name: keycloak  # Name the container 'keycloak'
+    command:
+      # - start --optimized  # Start Keycloak in production mode
+      - start-dev  # Start Keycloak in development mode
+    environment:
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}  # Set the Keycloak admin username
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}  # Set the Keycloak admin passwordDB_VENDOR: ${DB_VENDOR}  # Specify the database vendor as PostgreSQL
+      DB_ADDR: ${DB_ADDR}  # Set the database address to the 'postgres' service
+      DB_DATABASE: ${DB_DATABASE}  # Set the database name to 'keycloak'
+      DB_USER: ${DB_USER}  # Set the database user to 'keycloak'
+      DB_PASSWORD: ${DB_PASSWORD}  # Set the database password
+    ports:
+      - "8081:8080"  # Map port 8080 in the container to port 8081 on the host
+    depends_on:
+      - postgres  # Ensure the 'postgres' service is started before this service
+    networks:
+      - keycloak-network  # Connect to the 'keycloak-network' network
+
+# Define Docker volumes
+volumes:
+  postgres_data:  # Volume for persisting PostgreSQL data
+
+# Define Docker networks
+networks:
+  keycloak-network:
+    name: keycloak-network  # Name the network 'keycloak-network'
