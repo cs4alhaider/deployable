@@ -1,3 +1,4 @@
 *.env
 data.ms/
 
+.DS_Store
