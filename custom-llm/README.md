@@ -58,7 +58,3 @@ A named volume dedicated to the `open-webui` service for its backend data storag
     - `ollama` service: Accessible at `http://localhost:11434`
     - `open-webui` service: Accessible at `http://localhost:3000`
 
-## Author
-
-- **Abdullah Alhaider**
-- Email: [cs.alhaider@gmail.com](mailto:cs.alhaider@gmail.com)
