@@ -12,34 +12,6 @@
 #   This service provides a web user interface, depending on the ollama service. It uses the same volume as ollama for 
 #   shared storage and an additional volume for its own data. It exposes port 3000 to the host.
 
-# version: '3.8'
-
-# services:
-#   ollama:
-#     image: ollama/ollama
-#     container_name: ollama
-#     volumes:
-#       - ollama:/root/.ollama  # Mount the volume for persistent storage
-#     ports:
-#       - "11434:11434"  # Map the container's port 11434 to the host's port 11434
-#     restart: unless-stopped  # Ensure the container restarts unless explicitly stopped
-
-#   open-webui:
-#     image: ghcr.io/open-webui/open-webui:ollama
-#     container_name: open-webui
-#     volumes:
-#       - ollama:/root/.ollama  # Mount the ollama volume for shared storage
-#       - open-webui:/app/backend/data  # Mount the open-webui volume for persistent storage
-#     ports:
-#       - "3000:8080"  # Map the container's port 8080 to the host's port 3000
-#     restart: always  # Ensure the container always restarts
-#     depends_on:
-#       - ollama  # Ensure ollama service starts before open-webui
-
-# volumes:
-#   ollama:  # Define the named volume shared by both services
-#   open-webui:  # Define another named volume for open-webui service
-
 services:
   ollama:
     image: ollama/ollama:latest
