@@ -1,4 +1,9 @@
-*.env
+# Ignore .env file
+.env
+
+# Do not ignore .example.env file
+!.example.env
+
 data.ms/
 
 .DS_Store
