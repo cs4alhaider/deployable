@@ -23,7 +23,7 @@
 ollama serve & sleep 20
 
 # Check if any model is already pulled
-if ollama list | grep -q "llama3"; then
+if ollama list | grep -q "llama3:8b"; then
     echo "Models are already present. Skipping pull."
 else
     echo "No models found. Pulling Llama3..."
