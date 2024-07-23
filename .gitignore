@@ -1,9 +1,13 @@
 # Ignore .env file
 .env
 
-# Do not ignore .example.env file
+# Do not ignore example files
 !.example.env
+!.env.example
 
-data.ms/
-
-.DS_Store
+# Ignore all files
+/*
+# Do not ignore README.md files
+!/*.md
+# Do not ignore any .yml files
+!/*.yml
