@@ -56,7 +56,7 @@ Below is an overview of the available services:
     Use the [deploy-hub](https://github.com/cs4alhaider/deploy-hub) CLI tool to run the service or use below command directly:
 
     ```bash
-    docker-compose -f *.yml up -d
+    docker compose -f *.yml up -d
     ```
 
 ## Contributing
