@@ -4,6 +4,7 @@ services:
     image: metabase/metabase:v0.53.3
     container_name: metabase
     hostname: metabase
+    platform: linux/amd64
     volumes:
       - /dev/urandom:/dev/random:ro
     ports:
