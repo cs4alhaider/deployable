@@ -1,12 +1,14 @@
 services:
+  # Metabase
   metabase:
-    image: metabase/metabase:latest
+    image: metabase/metabase:v0.53.3
     container_name: metabase
     hostname: metabase
     volumes:
       - /dev/urandom:/dev/random:ro
     ports:
       - 3000:3000
+    restart: unless-stopped
     environment:
       MB_DB_TYPE: ${MB_DB_TYPE:-postgres}
       MB_DB_DBNAME: ${MB_DB_DBNAME:-metabaseappdb}
@@ -21,16 +23,20 @@ services:
       interval: 15s
       timeout: 5s
       retries: 5
+
+  # Postgres
   postgres:
     image: postgres:latest
     container_name: postgres
     hostname: postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-metabase}
       POSTGRES_DB: ${POSTGRES_DB:-metabaseappdb}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mysecretpassword}
     networks:
       - metanet1
+      
 networks:
   metanet1:
     driver: bridge
